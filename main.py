@@ -1,40 +1,57 @@
 from dados.banco import Banco
 
 from modelos.documento_identidade import DocumentoIdentidade
+from modelos.autorizacao_residencia import AutorizacaoResidencia
+from modelos.autorizacao_refugio import AutorizacaoRefugio
 
 from servicos.cadastro import Cadastro
 from servicos.consulta import Consulta
 from servicos.revogacao import Revogacao
+from servicos.renovacao import Renovacao
 from servicos.relatorios import Relatorios
 
 
-banco = Banco()
+print("=================================")
+print("LOGIN")
+print("=================================")
+print("1 - Administrador")
+print("2 - Supervisor")
+print("3 - Funcionário de Registro")
+print("4 - Solicitante")
 
+perfil = input("Escolha o perfil: ")
+
+print("\nAcesso concedido.\n")
+
+banco = Banco()
 
 while True:
 
-    print("\n======================================")
+    print("\n===================================")
     print(" SISTEMA DE REGISTRO NACIONAL")
-    print("======================================")
-    print("1 - Cadastrar Documento")
-    print("2 - Buscar por Documento")
-    print("3 - Buscar por Nome")
-    print("4 - Listar Registros")
-    print("5 - Revogar Documento")
+    print("===================================")
+    print("1 - Documento de Identidade")
+    print("2 - Autorização de Residência")
+    print("3 - Autorização de Refúgio")
+    print("4 - Buscar por Documento")
+    print("5 - Buscar por Nome")
+    print("6 - Buscar por Tipo")
+    print("7 - Renovar Documento")
+    print("8 - Revogar Documento")
+    print("9 - Relatórios")
     print("0 - Sair")
-    print("======================================")
 
-    opcao = input("Escolha uma opção: ")
+    opcao = input("\nEscolha: ")
 
     if opcao == "1":
 
         nome = input("Nome: ")
-        documento = input("Número do documento: ")
+        documento = input("Documento: ")
         foto = input("Foto: ")
-        digital = input("Impressão digital: ")
-        data = input("Data de emissão: ")
+        digital = input("Digital: ")
+        data = input("Data emissão: ")
 
-        pessoa = DocumentoIdentidade(
+        obj = DocumentoIdentidade(
             nome,
             documento,
             foto,
@@ -42,52 +59,128 @@ while True:
             data
         )
 
-        Cadastro.cadastrar(banco, pessoa)
+        Cadastro.cadastrar(banco, obj)
 
     elif opcao == "2":
 
-        documento = input("Digite o documento: ")
+        nome = input("Nome: ")
+        documento = input("Documento: ")
+        foto = input("Foto: ")
+        digital = input("Digital: ")
+        data = input("Data emissão: ")
+        pais = input("País de origem: ")
+        vencimento = input("Data de vencimento: ")
 
-        resultado = Consulta.buscar_por_documento(
-            banco,
-            documento
+        obj = AutorizacaoResidencia(
+            nome,
+            documento,
+            foto,
+            digital,
+            data,
+            pais,
+            vencimento
         )
 
-        if resultado:
-            print(resultado)
-        else:
-            print("Documento não encontrado.")
+        Cadastro.cadastrar(banco, obj)
 
     elif opcao == "3":
 
-        nome = input("Digite o nome: ")
+        nome = input("Nome: ")
+        documento = input("Documento: ")
+        foto = input("Foto: ")
+        digital = input("Digital: ")
+        data = input("Data emissão: ")
+        pais = input("País de origem: ")
+        motivo = input("Motivo do refúgio: ")
 
-        resultados = Consulta.buscar_por_nome(
+        obj = AutorizacaoRefugio(
+            nome,
+            documento,
+            foto,
+            digital,
+            data,
+            pais,
+            motivo
+        )
+
+        Cadastro.cadastrar(banco, obj)
+
+    elif opcao == "4":
+
+        doc = input("Documento: ")
+
+        pessoa = Consulta.buscar_por_documento(
+            banco,
+            doc
+        )
+
+        print(pessoa if pessoa else "Não encontrado.")
+
+    elif opcao == "5":
+
+        nome = input("Nome: ")
+
+        resultado = Consulta.buscar_por_nome(
             banco,
             nome
         )
 
-        if len(resultados) > 0:
+        for item in resultado:
+            print(item)
 
-            for pessoa in resultados:
-                print(pessoa)
+    elif opcao == "6":
+
+        print("DocumentoIdentidade")
+        print("AutorizacaoResidencia")
+        print("AutorizacaoRefugio")
+
+        tipo = input("Tipo: ")
+
+        resultado = Consulta.buscar_por_tipo(
+            banco,
+            tipo
+        )
+
+        for item in resultado:
+            print(item)
+
+    elif opcao == "7":
+
+        doc = input("Documento: ")
+
+        pessoa = Consulta.buscar_por_documento(
+            banco,
+            doc
+        )
+
+        if pessoa:
+
+            nova = input("Nova data de emissão: ")
+
+            Renovacao.renovar(
+                pessoa,
+                nova
+            )
 
         else:
-            print("Nenhum registro encontrado.")
 
-    elif opcao == "4":
+            print("Documento não encontrado.")
 
-        Relatorios.listar(banco)
+    elif opcao == "8":
 
-        Relatorios.quantidade_tramites(banco)
-
-    elif opcao == "5":
-
-        documento = input("Digite o documento para revogar: ")
+        doc = input("Documento: ")
 
         Revogacao.revogar(
             banco,
-            documento
+            doc
+        )
+
+    elif opcao == "9":
+
+        Relatorios.listar(banco)
+
+        Relatorios.quantidade_tramites(
+            banco
         )
 
     elif opcao == "0":
@@ -99,4 +192,3 @@ while True:
     else:
 
         print("Opção inválida.")
-

@@ -21,3 +21,16 @@ class Consulta:
                 resultado.append(pessoa)
 
         return resultado
+
+    @staticmethod
+    def buscar_por_tipo(banco, tipo):
+
+        resultado = []
+
+        for pessoa in banco.registros:
+
+            if pessoa.__class__.__name__.lower() == tipo.lower():
+
+                resultado.append(pessoa)
+
+        return resultado
