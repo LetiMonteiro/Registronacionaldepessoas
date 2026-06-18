@@ -297,8 +297,3 @@ class Banco:
             )
 
         return None
-
-<<<<<<< HEAD
-=======
-
->>>>>>> fb92f64b862868dc1da7e33cfa4316f15925121e
