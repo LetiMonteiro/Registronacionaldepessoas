@@ -1,4 +1,3 @@
-```python
 import sqlite3
 import json
 
@@ -298,4 +297,5 @@ class Banco:
             )
 
         return None
-```
+
+
